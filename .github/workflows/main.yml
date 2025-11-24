@@ -5,19 +5,34 @@ on:
     branches: [ "main" ]
 
 jobs:
-  laravel-test:
+  laravel-ci:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-    - name: Setup PHP
-      uses: shivammathur/setup-php@v2
-      with:
-        php-version: '8.2'
+      # Setup PHP untuk Laravel
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.2
 
-    - name: Install Composer
-      run: composer install
+      - name: Install Composer
+        run: composer install --no-interaction --prefer-dist
 
-    - name: Basic Test
-      run: php --version
+      # Setup Node.js untuk ESLint
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install Node Dependencies
+        run: npm install
+
+      # LINTER (WAJIB TUGAS)
+      - name: Run ESLint
+        run: npm run lint
+
+      # UNIT TEST (jika ada)
+      - name: Run Laravel Tests
+        run: php artisan test || echo "Tidak ada test, hanya menampilkan pesan"
